@@ -618,6 +618,8 @@ SUFFIX
 AM_LDFLAGS
 AM_CFLAGS
 VISIBILITY_CFLAGS
+WINELIB_TARGETED_FALSE
+WINELIB_TARGETED_TRUE
 WINDRES
 DLLTOOL
 RM
@@ -2936,8 +2938,8 @@ fi
 if test "x$winelib_targeted" = "xyes"; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: Using winelib to compile" >&5
 printf "%s\n" "Using winelib to compile" >&6; }
-  CC="winegcc -m32"
-  CXX="wineg++ -m32"
+  CC="winegcc"
+  CXX="wineg++"
 fi
 
 
@@ -4823,10 +4825,25 @@ AM_CFLAGS="$AM_CFLAGS -DUNICODE -D_UNICODE -UNDEBUG -DCOBJMACROS -D__USE_MINGW_A
 
 # Some winelib specific flags
 if test "x$winelib_targeted" = "xyes"; then
-  #  -mno-cygwin
-  AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -I/usr/include/wine/msvcrt/"
+  AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -mno-cygwin -I/usr/include/wine/msvcrt/"
   AM_LDFLAGS="-mwindows"
 
+   if true; then
+  WINELIB_TARGETED_TRUE=
+  WINELIB_TARGETED_FALSE='#'
+else
+  WINELIB_TARGETED_TRUE='#'
+  WINELIB_TARGETED_FALSE=
+fi
+
+else
+   if false; then
+  WINELIB_TARGETED_TRUE=
+  WINELIB_TARGETED_FALSE='#'
+else
+  WINELIB_TARGETED_TRUE='#'
+  WINELIB_TARGETED_FALSE=
+fi
 
 fi
 
@@ -4862,6 +4879,12 @@ ac_config_files="$ac_config_files src/syslinux/libfat/Makefile"
 ac_config_files="$ac_config_files src/syslinux/libinstaller/Makefile"
 
 ac_config_files="$ac_config_files src/syslinux/win/Makefile"
+
+
+if test "x$winelib_targeted" = "xyes"; then
+  ac_config_files="$ac_config_files src/winelib_helpers/Makefile"
+
+fi
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5022,6 +5045,14 @@ else
   am__EXEEXT_FALSE=
 fi
 
+if test -z "${WINELIB_TARGETED_TRUE}" && test -z "${WINELIB_TARGETED_FALSE}"; then
+  as_fn_error $? "conditional \"WINELIB_TARGETED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WINELIB_TARGETED_TRUE}" && test -z "${WINELIB_TARGETED_FALSE}"; then
+  as_fn_error $? "conditional \"WINELIB_TARGETED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0
@@ -5597,6 +5628,7 @@ do
     "src/syslinux/libfat/Makefile") CONFIG_FILES="$CONFIG_FILES src/syslinux/libfat/Makefile" ;;
     "src/syslinux/libinstaller/Makefile") CONFIG_FILES="$CONFIG_FILES src/syslinux/libinstaller/Makefile" ;;
     "src/syslinux/win/Makefile") CONFIG_FILES="$CONFIG_FILES src/syslinux/win/Makefile" ;;
+    "src/winelib_helpers/Makefile") CONFIG_FILES="$CONFIG_FILES src/winelib_helpers/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: '$ac_config_target'" "$LINENO" 5;;
   esac

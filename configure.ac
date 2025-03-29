@@ -88,7 +88,9 @@ if test "x$winelib_targeted" = "xyes"; then
   AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -mno-cygwin -I/usr/include/wine/msvcrt/"
   AM_LDFLAGS="-mwindows"
 
-
+  AM_CONDITIONAL([WINELIB_TARGETED], [true])
+else
+  AM_CONDITIONAL([WINELIB_TARGETED], [false])
 fi
 
 
@@ -111,4 +113,9 @@ AC_CONFIG_FILES([src/ms-sys/Makefile])
 AC_CONFIG_FILES([src/syslinux/libfat/Makefile])
 AC_CONFIG_FILES([src/syslinux/libinstaller/Makefile])
 AC_CONFIG_FILES([src/syslinux/win/Makefile])
+
+if test "x$winelib_targeted" = "xyes"; then
+  AC_CONFIG_FILES([src/winelib_helpers/Makefile])
+fi
+
 AC_OUTPUT

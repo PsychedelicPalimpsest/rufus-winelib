@@ -20,6 +20,10 @@
 #include <malloc.h>
 #include "libfatint.h"
 
+#ifdef _WINELIB
+#include "../../winelib_helpers/misc.h"
+#endif
+
 /*
  * NB: We need to align our sector buffers to at least the 8-byte mark, as some Windows
  * disk devices, notably O2Micro PCI-E SD card readers, return ERROR_INVALID_PARAMETER

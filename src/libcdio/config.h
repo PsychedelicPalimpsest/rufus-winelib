@@ -38,7 +38,9 @@
 /* #undef HAVE_FSEEKO */
 
 /* Define to 1 if you have the `fseeko64' function. */
+#ifndef _WINELIB
 #define HAVE_FSEEKO64 1
+#endif
 
 #if defined(_MSC_VER)
 /* The equivalent of fseeko64 for MSVC is _fseeki64 */
@@ -131,7 +133,9 @@
 /* Define to 1 if you have the `strdup' function. */
 #define HAVE_STRDUP 1
 /* The equivalent of strdup on MSVC is _strdup */
+#ifndef _WINELIB
 #define strdup _strdup
+#endif
 
 /* Define to 1 if you have the <strings.h> header file. */
 /* #undef HAVE_STRINGS_H */

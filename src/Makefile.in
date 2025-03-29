@@ -724,6 +724,10 @@ uninstall-am:
 %_rc.o: %.rc ../res/loc/embedded.loc
 	$(AM_V_WINDRES) $(AM_RCFLAGS) -i $< -o $@
 
+@WINELIB_TARGETED_TRUE@	SUBDIRS += winelib_helpers
+@WINELIB_TARGETED_TRUE@	rufus_LDADD += winelib_helpers/libwinelib_help.a
+@WINELIB_TARGETED_TRUE@	rufus_CFLAGS += -Iwinelib_helpers/
+
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

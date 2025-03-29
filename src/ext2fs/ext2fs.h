@@ -24,6 +24,10 @@
 #define EXT2FS_NO_TDB_UNUSED	EXT2FS_ATTR((unused))
 #endif
 
+#ifdef _WINELIB
+#include "winelib_helpers/stat_helper.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

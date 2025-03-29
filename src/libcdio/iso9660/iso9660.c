@@ -95,7 +95,7 @@ timegm(struct tm *tm)
 static struct tm *
 gmtime_r(const time_t *timer, struct tm *result)
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(_WINELIB)
     return (gmtime_s(result, timer) == 0) ? result : NULL;
 #else
     struct tm *tmp = gmtime(timer);

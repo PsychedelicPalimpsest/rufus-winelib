@@ -24,3 +24,9 @@ rufus_CFLAGS = -I$(srcdir)/ms-sys/inc -I$(srcdir)/syslinux/libfat -I$(srcdir)/sy
 rufus_LDFLAGS = $(AM_LDFLAGS) -mwindows -L $(srcdir)/../.mingw
 rufus_LDADD = rufus_rc.o bled/libbled.a ext2fs/libext2fs.a ms-sys/libmssys.a syslinux/libfat/libfat.a syslinux/libinstaller/libinstaller.a syslinux/win/libwin.a \
 	libcdio/iso9660/libiso9660.a libcdio/udf/libudf.a libcdio/driver/libdriver.a $(NONVULNERABLE_LIBS) $(VULNERABLE_LIBS)
+
+if WINELIB_TARGETED
+	SUBDIRS += winelib_helpers
+	rufus_LDADD += winelib_helpers/libwinelib_help.a
+	rufus_CFLAGS += -Iwinelib_helpers/
+endif

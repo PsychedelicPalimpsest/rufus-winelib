@@ -13,6 +13,9 @@
  * %End-Header%
  */
 
+/* Can't use an NT driver on unix */
+#ifndef _WINELIB
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -749,3 +752,6 @@ static errcode_t nt_flush(io_channel channel)
 
 	return 0;
 }
+
+
+#endif

@@ -19,6 +19,10 @@
  *   http://www.wd-3.com/archive/luserland.htm
  */
 
+
+/* TODO: Write a linux version */
+#ifndef _WINELIB
+
 #include <windows.h>
 #include <winioctl.h>
 #include <stddef.h>
@@ -358,3 +362,7 @@ VOID M_NTFSSECT_API NtfsSectUnloadXpFuncs(S_NTFSSECT_XPFUNCS * XpFuncs) {
     return;
   }
 
+
+
+
+#endif

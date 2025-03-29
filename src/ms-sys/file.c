@@ -25,6 +25,10 @@
 
 extern unsigned long ulBytesPerSector;
 
+/* TODO: Does this need a linux version? */
+
+#ifndef _WINELIB
+
 /* Returns the number of bytes written or -1 on error */
 int64_t write_sectors(HANDLE hDrive, uint64_t SectorSize,
                       uint64_t StartSector, uint64_t nSectors,
@@ -225,3 +229,6 @@ out:
    _mm_free(aucBuf);
    return r;
 } /* write_data */
+
+
+#endif

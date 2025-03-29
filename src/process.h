@@ -24,7 +24,9 @@
 
 #include <windows.h>
 #include <winnt.h>
+#ifndef _WINELIB
 #include <winternl.h>
+#endif
 #include <stdint.h>
 
 #pragma once
