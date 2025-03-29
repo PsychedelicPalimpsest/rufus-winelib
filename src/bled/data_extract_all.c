@@ -5,6 +5,16 @@
 #include "libbb.h"
 #include "bb_archive.h"
 
+#ifdef _WINELIB
+/* The wine msvcrt lacks these? */
+# include <sys/stat.h>
+// #define	ISTYPE(mode, mask)	(((mode) & S_IFMT) == (mask))
+// #define	S_ISREG(mode)	 ISTYPE((mode), S_IFREG)
+// #define	S_ISDIR(mode)	 ISTYPE((mode), S_IFDIR)
+
+#endif
+
+
 void FAST_FUNC data_extract_all(archive_handle_t *archive_handle)
 {
 	file_header_t *file_header = archive_handle->file_header;

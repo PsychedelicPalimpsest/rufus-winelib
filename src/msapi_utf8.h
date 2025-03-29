@@ -1175,6 +1175,14 @@ static __inline FILE* fopenU(const char* filename, const char* mode)
 	return ret;
 }
 
+
+#if _WINELIB
+// Winelib: Found in: wine/dlls/msvcrt/file.c
+//          Seems somebody at wine didn't know this was exposed.
+
+int CDECL _wsopen_s( int *fd, const wchar_t* path, int oflags, int shflags, int pmode );
+#endif
+
 static __inline int _openU(const char *filename, int oflag , int pmode)
 {
 	int ret = -1;

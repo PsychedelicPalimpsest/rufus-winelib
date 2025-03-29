@@ -15,7 +15,8 @@
 #include "bb_archive.h"
 #include "bled.h"
 
-typedef long long int(*unpacker_t)(transformer_state_t *xstate);
+// TODO: Make sure the wine modifications here wont be an issue.
+typedef IF_DESKTOP(long long) int(*unpacker_t)(transformer_state_t *xstate) FAST_FUNC;
 
 /* Globals */
 smallint bb_got_signal;
@@ -35,7 +36,7 @@ int bb_virtual_fd = -1;
 // So we set our bufsize to 256 KB
 uint32_t BB_BUFSIZE = 0x40000;
 
-static long long int unpack_none(transformer_state_t *xstate)
+FAST_FUNC static long long int unpack_none(transformer_state_t *xstate)
 {
 	bb_error_msg("This compression type is not supported");
 	return -1;

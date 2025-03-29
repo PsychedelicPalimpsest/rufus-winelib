@@ -1,8 +1,24 @@
 AC_INIT([rufus], [4.7], [https://github.com/pbatard/rufus/issues], [rufus], [https://rufus.ie])
-AM_INIT_AUTOMAKE([-Wno-portability foreign no-dist no-dependencies])
+AM_INIT_AUTOMAKE([foreign no-dist no-dependencies subdir-objects])
 AC_CONFIG_SRCDIR([src/rufus.c])
 AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
+
+
+AC_ARG_ENABLE([winelib],
+    [AS_HELP_STRING([--enable-winelib], [Compile for winelib])],
+    [winelib_targeted=yes],
+    [winelib_targeted=no]
+)
+
+# Force the winegcc compilers
+if test "x$winelib_targeted" = "xyes"; then
+  AC_MSG_RESULT([Using winelib to compile])
+  CC="winegcc -m32"
+  CXX="wineg++ -m32"
+fi
+
+
 
 AC_PREREQ([2.50])
 AC_PROG_CC
@@ -65,6 +81,17 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([])],
 CFLAGS="${saved_CFLAGS}"
 
 AM_CFLAGS="$AM_CFLAGS -DUNICODE -D_UNICODE -UNDEBUG -DCOBJMACROS -D__USE_MINGW_ANSI_STDIO=0 -std=gnu11 -Wshadow -Wall -Wformat-security -Wundef -Wunused -Wstrict-prototypes -Wno-restrict -Wno-array-bounds -Werror-implicit-function-declaration -Wbidi-chars=none $nopointersign_cflags"
+
+
+# Some winelib specific flags
+if test "x$winelib_targeted" = "xyes"; then
+  AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -mno-cygwin -I/usr/include/wine/msvcrt/"
+  AM_LDFLAGS="-mwindows"
+
+
+fi
+
+
 
 AC_SUBST([VISIBILITY_CFLAGS])
 AC_SUBST([AM_CFLAGS])

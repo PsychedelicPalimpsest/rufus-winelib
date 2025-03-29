@@ -4823,7 +4823,8 @@ AM_CFLAGS="$AM_CFLAGS -DUNICODE -D_UNICODE -UNDEBUG -DCOBJMACROS -D__USE_MINGW_A
 
 # Some winelib specific flags
 if test "x$winelib_targeted" = "xyes"; then
-  AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -mno-cygwin -I/usr/include/wine/msvcrt/"
+  #  -mno-cygwin
+  AM_CFLAGS="${CFLAGS} -D_WINELIB -I/usr/include/wine/windows/ -I/usr/include/wine/msvcrt/"
   AM_LDFLAGS="-mwindows"
 
 
