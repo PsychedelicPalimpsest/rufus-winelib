@@ -16,6 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#ifndef _WINELIB
+
 #ifdef _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -2689,3 +2692,5 @@ out:
 	safe_closehandle(hPhysical);
 	return ret;
 }
+
+#endif /* _WINELIB */

@@ -658,9 +658,9 @@ WORD get_language_id(loc_cmd* lcmd)
 	for (i = 0; (i<lcmd->unum_size); i++) {
 		// Always uppercase
 		_snwprintf(wlang, ARRAYSIZE(wlang), L"%04X", lcmd->unum[i]);
-		// This callback enumeration from Microsoft is retarded. Now we need a global
+		// This callback enumeration from Microsoft is bad. Now we need a global
 		// boolean to tell us that we found what we were after.
-		EnumUILanguages(EnumUILanguagesProc, 0x4, (LONG_PTR)wlang);	// 0x04 = MUI_LANGUAGE_ID
+		EnumUILanguages((UILANGUAGE_ENUMPROCA) EnumUILanguagesProc, 0x4, (LONG_PTR)wlang);	// 0x04 = MUI_LANGUAGE_ID
 		if (found_lang) {
 			ubprintf("Detected installed Windows Language Pack for 0x%04X (%s)", lcmd->unum[i], lcmd->txt[1]);
 			return MAKELANGID(lcmd->unum[i], SUBLANG_DEFAULT);

@@ -61,6 +61,7 @@
 
 #define NtCurrentProcess() ((HANDLE)(LONG_PTR)-1)
 
+#ifndef _WINELIB
 typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX
 {
 	PVOID Object;
@@ -79,6 +80,7 @@ typedef struct _SYSTEM_HANDLE_INFORMATION_EX
 	ULONG_PTR Reserved;
 	SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
 } SYSTEM_HANDLE_INFORMATION_EX, *PSYSTEM_HANDLE_INFORMATION_EX;
+#endif
 
 #if defined(_MSC_VER)
 typedef struct _OBJECT_NAME_INFORMATION
@@ -117,10 +119,12 @@ typedef struct _OBJECT_TYPE_INFORMATION
 #endif
 #define ObjectTypesInformation 3
 
+#ifndef _WINELIB
 typedef struct _OBJECT_TYPES_INFORMATION
 {
 	ULONG NumberOfTypes;
 } OBJECT_TYPES_INFORMATION, *POBJECT_TYPES_INFORMATION;
+#endif
 
 typedef struct _PROCESS_BASIC_INFORMATION_WOW64
 {

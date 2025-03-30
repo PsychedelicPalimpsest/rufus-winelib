@@ -37,7 +37,11 @@
 #include <io.h>
 #include <getopt.h>
 #include <assert.h>
+
+/* Winelib lacks this */
+#ifndef _WINELIB
 #include <delayimp.h>
+#endif
 
 #include "rufus.h"
 #include "format.h"

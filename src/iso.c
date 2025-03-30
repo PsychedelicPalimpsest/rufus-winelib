@@ -33,7 +33,18 @@
 #include <direct.h>
 #include <ctype.h>
 #include <assert.h>
+
+#ifndef _WINELIB
 #include <virtdisk.h>
+#else
+
+/* STORAGE_DEPENDENCY_INFO seems to be improperly defined in wine, this disables the bad part */
+#define __WINESRC__
+#include <virtdisk.h>
+#undef __WINESRC__
+#endif /* _WINELIB */
+
+
 #include <sys/stat.h>
 
 #define DO_NOT_WANT_COMPATIBILITY
@@ -413,7 +424,7 @@ static void fix_config(const char* psz_fullpath, const char* psz_path, const cha
 			// Other distros can go to hell. Seriously, just check all partitions for
 			// an ext volume with the right label and use persistence *THEN*. I mean,
 			// why on earth do you need a bloody *NONSTANDARD* kernel option and/or a
-			// "persistence.conf" file. This is SO INCREDIBLY RETARDED that it makes
+			// "persistence.conf" file. This is SO INCREDIBLY STUPID that it makes
 			// Windows look smart in comparison. Great job there, Linux people!
 		}
 	}

@@ -41,6 +41,20 @@
 #define szOID_NESTED_SIGNATURE "1.3.6.1.4.1.311.2.4.1"
 #endif
 
+// Winelib doesn't seem to have this one
+#if !defined(szOID_RFC3161_counterSign)
+#define szOID_RFC3161_counterSign "1.3.6.1.4.1.311.3.3.1"
+#endif
+// Or this one
+#if !defined(szOID_TIMESTAMP_TOKEN)
+#define szOID_TIMESTAMP_TOKEN "1.2.840.113549.1.9.16.1.4"
+#endif
+
+
+#ifdef _WINELIB
+__int64 CDECL _abs64( __int64 n );
+#endif
+
 // Signatures names we accept. Must be the the exact name, including capitalization,
 // that CertGetNameStringA(CERT_NAME_ATTR_TYPE, szOID_COMMON_NAME) returns.
 const char* cert_name[3] = { "Akeo Consulting", "Akeo Systems", "Pete Batard" };

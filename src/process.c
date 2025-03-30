@@ -36,6 +36,11 @@
 #include "missing.h"
 #include "msapi_utf8.h"
 
+#ifdef _WINELIB
+#include <ntstatus.h>
+#endif
+
+
 PF_TYPE_DECL(NTAPI, PVOID, RtlCreateHeap, (ULONG, PVOID, SIZE_T, SIZE_T, PVOID, PRTL_HEAP_PARAMETERS));
 PF_TYPE_DECL(NTAPI, PVOID, RtlDestroyHeap, (PVOID));
 PF_TYPE_DECL(NTAPI, PVOID, RtlAllocateHeap, (PVOID, ULONG, SIZE_T));
@@ -183,6 +188,8 @@ static VOID PhFree(PVOID Memory)
 		pfRtlFreeHeap(PhHeapHandle, 0, Memory);
 }
 
+#ifndef _WINELIB
+
 /**
  * Enumerates all open handles.
  *
@@ -232,6 +239,7 @@ NTSTATUS PhEnumHandlesEx(PSYSTEM_HANDLE_INFORMATION_EX *Handles)
 
 	return status;
 }
+#endif /* _WINELIB */
 
 /**
  * Opens a process.
@@ -422,6 +430,7 @@ out:
 	return wcmdline;
 }
 
+#ifndef _WINELIB
 
 /**
  * The search process thread.
@@ -767,6 +776,7 @@ out:
 	ExitThread(0);
 }
 
+
 /**
  * Start the process search thread.
  *
@@ -877,6 +887,7 @@ BOOL SetProcessSearch(DWORD DeviceNum)
 		uprintf("Could not signal start event to process search: %s", WindowsErrorString());
 	return ReleaseMutex(blocking_process.hLock);
 }
+#endif /* _WINELIB */
 
 /**
  * Check whether the corresponding PID is that of a running process.

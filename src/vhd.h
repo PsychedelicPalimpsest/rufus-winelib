@@ -25,7 +25,17 @@
 #undef DECLSPEC_IMPORT
 #define DECLSPEC_IMPORT __attribute__((visibility("hidden")))
 #endif
+
+#ifndef _WINELIB
 #include <virtdisk.h>
+#else
+
+/* STORAGE_DEPENDENCY_INFO seems to be improperly defined in wine, this disables the bad part */
+#define __WINESRC__
+#include <virtdisk.h>
+#undef __WINESRC__
+#endif /* _WINELIB */
+
 
 #pragma once
 

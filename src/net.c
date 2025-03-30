@@ -38,7 +38,17 @@
 #include <inttypes.h>
 #include <assert.h>
 #include <time.h>
+
+#ifndef _WINELIB
 #include <virtdisk.h>
+#else
+
+/* STORAGE_DEPENDENCY_INFO seems to be improperly defined in wine, this disables the bad part */
+#define __WINESRC__
+#include <virtdisk.h>
+#undef __WINESRC__
+#endif /* _WINELIB */
+
 
 #include "rufus.h"
 #include "missing.h"
@@ -68,9 +78,11 @@ static BOOL force_update_check = FALSE;
 static const char* request_headers[2] = { "Accept-Encoding: none", "Accept-Encoding: gzip, deflate" };
 extern const char* efi_archname[ARCH_MAX];
 
-#if defined(__MINGW32__)
+#ifdef __MINGW32__
 #define INetworkListManager_get_IsConnectedToInternet INetworkListManager_IsConnectedToInternet
 #endif
+
+
 
 static char* GetShortName(const char* url)
 {
@@ -129,6 +141,7 @@ static HINTERNET GetInternetSession(const char* user_agent, BOOL bRetry)
 		&IID_INetworkListManager, (LPVOID*)&pNetworkListManager);
 	if (hr == S_OK) {
 		for (i = 0; i <= WRITE_RETRIES; i++) {
+			#ifndef _WINELIB
 			hr = INetworkListManager_get_IsConnectedToInternet(pNetworkListManager, &InternetConnection);
 			// INetworkListManager may fail with ERROR_SERVICE_DEPENDENCY_FAIL if the DHCP service
 			// is not running, in which case we must fall back to using InternetGetConnectedState().
@@ -137,6 +150,11 @@ static HINTERNET GetInternetSession(const char* user_agent, BOOL bRetry)
 				InternetConnection = InternetGetConnectedState(&dwFlags, 0) ? VARIANT_TRUE : VARIANT_FALSE;
 				break;
 			}
+			#else
+			/* Wine ONLY has InternetGetConnectedState */
+			InternetConnection = InternetGetConnectedState(&dwFlags, 0) ? VARIANT_TRUE : VARIANT_FALSE;
+			break;
+			#endif
 			if (hr == S_OK || !bRetry)
 				break;
 			Sleep(1000);

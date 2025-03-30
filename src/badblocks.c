@@ -32,6 +32,10 @@
 #include "badblocks.h"
 #include "file.h"
 
+#ifdef _WINELIB
+#include "winelib_helpers/misc.h"
+#endif
+
 FILE* log_fd = NULL;
 static const char abort_msg[] = "Too many bad blocks, aborting test\n";
 static const char bb_prefix[] = "Bad Blocks: ";

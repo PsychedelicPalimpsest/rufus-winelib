@@ -45,9 +45,15 @@
 #include "drive.h"
 #include "dev.h"
 
+
+
+
 extern RUFUS_DRIVE rufus_drive[MAX_DRIVES];
 extern BOOL enable_HDDs, enable_VHDs, use_fake_units, enable_vmdk, usb_debug;
 extern BOOL list_non_usb_removable_drives, its_a_me_mario;
+
+/* TODO: Linux version of this */
+#ifndef _WINELIB
 
 /*
  * CfgMgr32.dll interface.
@@ -1101,3 +1107,6 @@ out:
 	htab_destroy(&htab_devid);
 	return r;
 }
+
+
+#endif /* _WINELIB */

@@ -58,9 +58,58 @@
 #define VDS_RESCAN_REFRESH                  0x00000001
 #define VDS_RESCAN_REENUMERATE              0x00000002
 
+
+
+#ifdef _WINELIB
+/* Please don't sue me Microsoft, wine lacked these */
+
+
+/* https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ne-winioctl-partition_style */
+typedef enum _PARTITION_STYLE {
+  PARTITION_STYLE_MBR,
+  PARTITION_STYLE_GPT,
+  PARTITION_STYLE_RAW
+} PARTITION_STYLE;
+
+/* https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-partition_information_gpt */
+typedef struct _PARTITION_INFORMATION_GPT {
+  GUID    PartitionType;
+  GUID    PartitionId;
+  DWORD64 Attributes;
+  WCHAR   Name[36];
+} PARTITION_INFORMATION_GPT, *PPARTITION_INFORMATION_GPT;
+
+/* https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-partition_information_mbr */
+typedef struct _PARTITION_INFORMATION_MBR {
+  BYTE    PartitionType;
+  BOOLEAN BootIndicator;
+  BOOLEAN RecognizedPartition;
+  DWORD   HiddenSectors;
+  GUID    PartitionId;
+} PARTITION_INFORMATION_MBR, *PPARTITION_INFORMATION_MBR;
+
+
+/* https://learn.microsoft.com/en-us/windows/win32/api/winioctl/ns-winioctl-partition_information_ex */
+typedef struct _PARTITION_INFORMATION_EX {
+  PARTITION_STYLE PartitionStyle;
+  LARGE_INTEGER   StartingOffset;
+  LARGE_INTEGER   PartitionLength;
+  DWORD           PartitionNumber;
+  BOOLEAN         RewritePartition;
+  BOOLEAN         IsServicePartition;
+  union {
+    PARTITION_INFORMATION_MBR Mbr;
+    PARTITION_INFORMATION_GPT Gpt;
+  } DUMMYUNIONNAME;
+} PARTITION_INFORMATION_EX, *PPARTITION_INFORMATION_EX;
+#endif
+
+
+
+
 #define VDS_SET_ERROR(hr) do { if (hr != S_OK) { SetLastError((DWORD)hr); ErrorStatus = RUFUS_ERROR(ERROR_GEN_FAILURE); } } while(0)
 
-#if !defined(__MINGW32__)
+#if !defined(__MINGW32__) && !defined(_WINELIB)
 typedef enum _FSINFOCLASS {
 	FileFsVolumeInformation = 1,
 	FileFsLabelInformation,
@@ -89,6 +138,8 @@ typedef struct {
 	DISK_EXTENT Extents[8];
 } VOLUME_DISK_EXTENTS_REDEF;
 
+
+#ifndef _WINELIB
 #if !defined(__MINGW32__)
 typedef struct _FILE_FS_DEVICE_INFORMATION {
 	DEVICE_TYPE DeviceType;
@@ -334,7 +385,8 @@ interface IVdsAsync {
 #define IVdsAsync_QueryStatus(This,pHrResult,pulPercentCompleted) (This)->lpVtbl->QueryStatus(This,pHrResult,pulPercentCompleted)
 #define IVdsAsync_Wait(This,pHrResult,pAsyncOut) (This)->lpVtbl->Wait(This,pHrResult,pAsyncOut)
 #define IVdsAsync_Release(This) (This)->lpVtbl->Release(This)
-#endif
+#endif /* __MINGW32__ */
+
 
 /* MinGW is unhappy about accessing partitions beside the first unless we redef */
 typedef struct _DRIVE_LAYOUT_INFORMATION_EX4 {
@@ -351,6 +403,15 @@ static __inline BOOL UnlockDrive(HANDLE hDrive) {
 	return DeviceIoControl(hDrive, FSCTL_UNLOCK_VOLUME, NULL, 0, NULL, 0, NULL, NULL);
 }
 #define safe_unlockclose(h) do {if ((h != INVALID_HANDLE_VALUE) && (h != NULL)) {UnlockDrive(h); CloseHandle(h); h = INVALID_HANDLE_VALUE;}} while(0)
+
+
+#else
+#define safe_unlockclose(h) {/* TODO */}
+#endif /* _WINELIB */
+
+
+
+
 
 /* Current drive info */
 typedef struct {
