@@ -44,6 +44,10 @@
 #include "registry.h"
 #include "bled/bled.h"
 
+
+// TODO: Linux
+#ifndef _WINELIB
+
 // WIM API Prototypes
 PF_TYPE_DECL(WINAPI, HANDLE, WIMCreateFile, (PWSTR, DWORD, DWORD, DWORD, DWORD, PDWORD));
 PF_TYPE_DECL(WINAPI, BOOL, WIMSetTemporaryPath, (HANDLE, PWSTR));
@@ -909,6 +913,8 @@ BOOL WimApplyImage(const char* image, int index, const char* dst)
 	return dw;
 }
 
+
+
 // Mount an ISO or a VHD/VHDX image and provide its size
 // Returns the physical path of the mounted image or NULL on error.
 char* VhdMountImageAndGetSize(const char* path, uint64_t* disk_size)
@@ -1194,3 +1200,7 @@ out:
 		safe_free(img_save.ImagePath);
 	}
 }
+
+
+
+#endif /* _WINELIB */

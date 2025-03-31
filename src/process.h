@@ -51,17 +51,22 @@
 #define STATUS_INSUFFICIENT_RESOURCES	((NTSTATUS)0xC000009AL)
 #define STATUS_NOT_SUPPORTED			((NTSTATUS)0xC00000BBL)
 
+// Winelib HAS these
+#ifndef _WINELIB
 #define SystemExtendedHandleInformation    64
+
+// This one might be declaired wrong in wine?
 #define FileProcessIdsUsingFileInformation 47
+#endif
 
 // MinGW doesn't know this one yet
 #if !defined(PROCESSOR_ARCHITECTURE_ARM64)
 #define PROCESSOR_ARCHITECTURE_ARM64       12
 #endif
 
+#ifndef _WINELIB
 #define NtCurrentProcess() ((HANDLE)(LONG_PTR)-1)
 
-#ifndef _WINELIB
 typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX
 {
 	PVOID Object;
@@ -117,9 +122,10 @@ typedef struct _OBJECT_TYPE_INFORMATION
 
 #define ObjectNameInformation  1
 #endif
-#define ObjectTypesInformation 3
 
 #ifndef _WINELIB
+#define ObjectTypesInformation 3
+
 typedef struct _OBJECT_TYPES_INFORMATION
 {
 	ULONG NumberOfTypes;
@@ -264,8 +270,8 @@ typedef struct _RTL_HEAP_PARAMETERS
 #define HEAP_CLASS_8 0x00008000 // CSR port heap
 #define HEAP_CLASS_MASK 0x0000f000
 
-// Privileges
-
+// Privileges, winelib has these
+#ifndef _WINELIB
 #define SE_MIN_WELL_KNOWN_PRIVILEGE (2L)
 #define SE_CREATE_TOKEN_PRIVILEGE (2L)
 #define SE_ASSIGNPRIMARYTOKEN_PRIVILEGE (3L)
@@ -302,6 +308,7 @@ typedef struct _RTL_HEAP_PARAMETERS
 #define SE_TIME_ZONE_PRIVILEGE (34L)
 #define SE_CREATE_SYMBOLIC_LINK_PRIVILEGE (35L)
 #define SE_MAX_WELL_KNOWN_PRIVILEGE SE_CREATE_SYMBOLIC_LINK_PRIVILEGE
+#endif
 
 #define MAX_NUM_HANDLES             16
 #define MAX_BLOCKING_PROCESSES      16

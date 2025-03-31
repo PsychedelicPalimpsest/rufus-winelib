@@ -23,7 +23,9 @@
 
 #include <windows.h>
 #include <sddl.h>
+#ifndef _WINELIB
 #include <gpedit.h>
+#endif
 #include <assert.h>
 #include <accctrl.h>
 #include <aclapi.h>
@@ -812,7 +814,12 @@ DWORD RunCommandWithProgress(const char* cmd, const char* dir, BOOL log, int msg
 			uprintf("Could not set commandline pipe: %s", WindowsErrorString());
 			goto out;
 		}
+		// Winelib does not support all of these
+		#ifndef _WINELIB
 		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES | STARTF_PREVENTPINNING | STARTF_TITLEISAPPID;
+		#else
+		si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+		#endif
 		si.wShowWindow = SW_HIDE;
 		si.hStdOutput = hOutputWrite;
 		si.hStdError = hOutputWrite;
@@ -945,6 +952,8 @@ typedef struct {
 	DWORD dwValue;
 } SetLGP_Params;
 
+// TODO: Linux equivlent (If needed???)
+#ifndef _WINELIB
 DWORD WINAPI SetLGPThread(LPVOID param)
 {
 	SetLGP_Params* p = (SetLGP_Params*)param;
@@ -1071,6 +1080,7 @@ BOOL SetLGP(BOOL bRestore, BOOL* bExistingKey, const char* szPath, const char* s
 		return FALSE;
 	return (BOOL) r;
 }
+#endif /* _WINELIB */
 
 /*
  * This call tries to evenly balance the affinities for an array of
@@ -1159,16 +1169,27 @@ char* ToLocaleName(DWORD lang_id)
 	return mui_str;
 }
 
+
+/* Winelib seems to expect privleges to be a char* */
+#ifdef _WINELIB
+#define __PREV_T LPCSTR
+#define __PREV_STR "%s"
+#else
+#define __PREV_T LPCWSTR
+#define __PREV_STR "%S"
+#endif
+
+
 /*
  * From: https://stackoverflow.com/a/40390858/1069307
  */
-BOOL SetPrivilege(HANDLE hToken, LPCWSTR pwzPrivilegeName, BOOL bEnable)
+BOOL SetPrivilege(HANDLE hToken, __PREV_T pwzPrivilegeName, BOOL bEnable)
 {
 	TOKEN_PRIVILEGES tp;
 	LUID luid;
 
 	if (!LookupPrivilegeValue(NULL, pwzPrivilegeName, &luid)) {
-		uprintf("Could not lookup '%S' privilege: %s", pwzPrivilegeName, WindowsErrorString());
+		uprintf("Could not lookup '" __PREV_STR "' privilege: %s", pwzPrivilegeName, WindowsErrorString());
 		return FALSE;
 	}
 
@@ -1177,7 +1198,7 @@ BOOL SetPrivilege(HANDLE hToken, LPCWSTR pwzPrivilegeName, BOOL bEnable)
 	tp.Privileges[0].Attributes = bEnable ? SE_PRIVILEGE_ENABLED : 0;
 
 	if (!AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL)) {
-		uprintf("Could not %s '%S' privilege: %s",
+		uprintf("Could not %s '" __PREV_STR "' privilege: %s",
 			bEnable ? "enable" : "disable", pwzPrivilegeName, WindowsErrorString());
 		return FALSE;
 	}

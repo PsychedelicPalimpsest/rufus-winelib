@@ -30,6 +30,14 @@
 #include <virtdisk.h>
 #else
 
+/* Winelib lacks this */
+typedef enum _CREATE_VIRTUAL_DISK_VERSION {
+  CREATE_VIRTUAL_DISK_VERSION_UNSPECIFIED   = 0,
+  CREATE_VIRTUAL_DISK_VERSION_1             = 1 
+} CREATE_VIRTUAL_DISK_VERSION;
+
+
+
 /* STORAGE_DEPENDENCY_INFO seems to be improperly defined in wine, this disables the bad part */
 #define __WINESRC__
 #include <virtdisk.h>

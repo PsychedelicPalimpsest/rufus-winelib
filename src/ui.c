@@ -80,8 +80,10 @@ void SetAccessibleName(HWND hCtrl, const char* name)
 	if (pfaps == NULL)
 		IGNORE_RETVAL(CoCreateInstance(&CLSID_AccPropServices, NULL, CLSCTX_INPROC, &IID_IAccPropServices, (LPVOID)&pfaps));
 	if (pfaps != NULL) {
+		#ifndef _WINELIB
 		IAccPropServices_ClearHwndProps(pfaps, hCtrl, OBJID_CLIENT, CHILDID_SELF, props, ARRAYSIZE(props));
 		IAccPropServices_SetHwndPropStr(pfaps, hCtrl, OBJID_CLIENT, CHILDID_SELF, Name_Property_GUID, wname);
+		#endif
 	}
 	free(wname);
 }
@@ -595,7 +597,11 @@ void ToggleAdvancedDeviceOptions(BOOL enable)
 {
 	RECT rc;
 	SIZE sz;
+	#ifndef _WINELIB
 	TBBUTTONINFO button_info;
+	#else
+	TBBUTTONINFOW button_info;
+	#endif
 	int i, shift = advanced_device_section_height;
 
 	if (!enable)
@@ -641,7 +647,11 @@ void ToggleAdvancedFormatOptions(BOOL enable)
 {
 	RECT rc;
 	SIZE sz;
+	#ifndef _WINELIB
 	TBBUTTONINFO button_info;
+	#else
+	TBBUTTONINFOW button_info;
+	#endif
 	int i, shift = advanced_format_section_height;
 
 	if (!enable)
@@ -968,7 +978,7 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 		// TODO: Handle SetText message so we can avoid this call
 		GetWindowTextW(hProgress, winfo, ARRAYSIZE(winfo));
 		hOldFont = (hInfoFont != NULL) ? (HFONT)SelectObject(hDC, hInfoFont) : NULL;
-		GetTextExtentPoint32(hDC, winfo, (int)wcslen(winfo), &size);
+		GetTextExtentPoint32W(hDC, winfo, (int)wcslen(winfo), &size);
 		if (size.cx > rc.right)
 			size.cx = rc.right;
 		if (size.cy > rc.bottom)
@@ -980,7 +990,7 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 				rc.right = MulDiv(pos + ((max - min) / 5) - max, rc.right, max - min);
 				SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
 				SetBkColor(hDC, color);
-				ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
+				ExtTextOutW(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 					ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 				rc.left = rc.right;
 				rc.right = full_right;
@@ -990,7 +1000,7 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 				rc.right = MulDiv(pos - min, rc.right, max - min);
 				SetTextColor(hDC, PROGRESS_BAR_NORMAL_TEXT_COLOR);
 				SetBkColor(hDC, PROGRESS_BAR_BACKGROUND_COLOR);
-				ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
+				ExtTextOutW(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 					ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 				rc.left = rc.right;
 				rc.right = full_right;
@@ -999,14 +1009,14 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 			rc.right = MulDiv(pos - min + ((max - min) / 5), rc.right, max - min);
 			SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
 			SetBkColor(hDC, color);
-			ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
+			ExtTextOutW(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 				ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 		} else {
 			// First segment
 			rc.right = (pos > min) ? MulDiv(pos - min, rc.right, max - min) : rc.left;
 			SetTextColor(hDC, PROGRESS_BAR_INVERTED_TEXT_COLOR);
 			SetBkColor(hDC, color);
-			ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
+			ExtTextOutW(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 				ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 		}
 		// Last segment
@@ -1014,7 +1024,7 @@ static INT_PTR CALLBACK ProgressCallback(HWND hCtrl, UINT message, WPARAM wParam
 		rc.right = full_right;
 		SetTextColor(hDC, PROGRESS_BAR_NORMAL_TEXT_COLOR);
 		SetBkColor(hDC, PROGRESS_BAR_BACKGROUND_COLOR);
-		ExtTextOut(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
+		ExtTextOutW(hDC, (full_right - size.cx) / 2, (rc.bottom - size.cy) / 2,
 			ETO_CLIPPED | ETO_OPAQUE | ETO_NUMERICSLOCAL, &rc, winfo, (int)wcslen(winfo), NULL);
 		// Bounding rectangle
 		SetDCPenColor(hDC, PROGRESS_BAR_BOX_COLOR);

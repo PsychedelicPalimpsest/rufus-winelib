@@ -1,4 +1,9 @@
 SUBDIRS = ../.mingw bled ext2fs ms-sys syslinux/libfat syslinux/libinstaller syslinux/win libcdio/iso9660 libcdio/udf libcdio/driver ../res/loc
+if WINELIB_TARGETED
+	SUBDIRS += winelib_helpers
+endif	
+
+
 # As far as I can tell, the following libraries are *not* vulnerable to side-loading, so we link using their regular version:
 NONVULNERABLE_LIBS = -lsetupapi -lole32 -lgdi32 -lshlwapi -lcrypt32 -lcomctl32 -luuid
 # The following libraries are vulnerable (or have an unknown vulnerability status), so we link using our delay-loaded replacement:
@@ -26,7 +31,6 @@ rufus_LDADD = rufus_rc.o bled/libbled.a ext2fs/libext2fs.a ms-sys/libmssys.a sys
 	libcdio/iso9660/libiso9660.a libcdio/udf/libudf.a libcdio/driver/libdriver.a $(NONVULNERABLE_LIBS) $(VULNERABLE_LIBS)
 
 if WINELIB_TARGETED
-	SUBDIRS += winelib_helpers
 	rufus_LDADD += winelib_helpers/libwinelib_help.a
 	rufus_CFLAGS += -Iwinelib_helpers/
 endif

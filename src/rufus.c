@@ -61,6 +61,11 @@
 #include "../res/grub/grub_version.h"
 #include "../res/grub2/grub2_version.h"
 
+#ifdef _WINELIB
+typedef NMBCDROPDOWN *LPNMBCDROPDOWN;
+#endif
+
+
 enum bootcheck_return {
 	BOOTCHECK_PROCEED = 0,
 	BOOTCHECK_CANCEL = -1,
@@ -2214,7 +2219,7 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 	LONG lPos;
 	BOOL set_selected_fs;
 	DRAWITEMSTRUCT* pDI;
-	LPTOOLTIPTEXT lpttt;
+	LPTOOLTIPTEXTW lpttt; /* TODO: Is this correct? */
 	NMBCDROPDOWN* pDropDown;
 	HDROP droppedFileInfo;
 	HMENU hMenu;
@@ -2861,7 +2866,7 @@ static INT_PTR CALLBACK MainCallback(HWND hDlg, UINT message, WPARAM wParam, LPA
 	case WM_NOTIFY:
 		switch (((LPNMHDR)lParam)->code) {
 		case TTN_GETDISPINFO:
-			lpttt = (LPTOOLTIPTEXT)lParam;
+			lpttt = (LPTOOLTIPTEXTW)lParam;
 			switch (lpttt->hdr.idFrom) {
 			case IDC_ABOUT:
 				utf8_to_wchar_no_alloc(lmprintf(MSG_302), wtooltip, ARRAYSIZE(wtooltip));
@@ -3231,6 +3236,7 @@ static HANDLE SetHogger(void)
 	return hogmutex;
 }
 
+#ifndef _WINELIB
 // For delay-loaded DLLs, use LOAD_LIBRARY_SEARCH_SYSTEM32 to avoid DLL search order hijacking.
 FARPROC WINAPI dllDelayLoadHook(unsigned dliNotify, PDelayLoadInfo pdli)
 {
@@ -3243,11 +3249,14 @@ FARPROC WINAPI dllDelayLoadHook(unsigned dliNotify, PDelayLoadInfo pdli)
 	return NULL;
 }
 
+
 #if defined(_MSC_VER)
 // By default the Windows SDK headers have a `const` while MinGW does not.
 const
 #endif
 PfnDliHook __pfnDliNotifyHook2 = dllDelayLoadHook;
+
+#endif /*_winelib */
 
 /*
  * Application Entrypoint

@@ -305,7 +305,7 @@ struct dx_hash_map {
 	int off;
 };
 
-static EXT2_QSORT_TYPE dx_hash_map_cmp(const void *ap, const void *bp)
+static __cdecl EXT2_QSORT_TYPE dx_hash_map_cmp(const void *ap, const void *bp)
 {
 	const struct dx_hash_map *a = ap, *b = bp;
 

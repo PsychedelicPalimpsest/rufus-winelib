@@ -1658,7 +1658,7 @@ BOOL efi_image_region_add(struct efi_image_regions* regs,
  *           0 if the virtual addresses are equal, 1 if the virtual address
  *             of arg1 is greater than that of arg2.
  */
-static int cmp_pe_section(const void* arg1, const void* arg2)
+static __cdecl int cmp_pe_section(const void* arg1, const void* arg2)
 {
 	const IMAGE_SECTION_HEADER* section1, * section2;
 

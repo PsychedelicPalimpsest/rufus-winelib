@@ -84,6 +84,9 @@ void SetDialogFocus(HWND hDlg, HWND hCtrl)
 	SendMessage(hDlg, WM_NEXTDLGCTL, (WPARAM)hCtrl, TRUE);
 }
 
+
+#ifndef _WINELIB
+
 /*
  * Return the UTF8 path of a file selected through a load or save dialog
  * All string parameters are UTF-8
@@ -210,6 +213,7 @@ out:
 	dialog_showing--;
 	return filepath;
 }
+#endif
 
 /*
  * Create the application status bar
@@ -1180,6 +1184,7 @@ BOOL CreateTaskbarList(void)
 	return TRUE;
 }
 
+#ifndef _WINELIB
 BOOL SetTaskbarProgressState(TASKBAR_PROGRESS_FLAGS tbpFlags)
 {
 	if (ptbl == NULL)
@@ -1193,6 +1198,7 @@ BOOL SetTaskbarProgressValue(ULONGLONG ullCompleted, ULONGLONG ullTotal)
 		return FALSE;
 	return !FAILED(ITaskbarList3_SetProgressValue(ptbl, hMainDialog, ullCompleted, ullTotal));
 }
+#endif
 
 static void Reposition(HWND hDlg, int id, int prev_id, int dx, int dw)
 {

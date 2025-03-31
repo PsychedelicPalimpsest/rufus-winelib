@@ -2051,7 +2051,7 @@ iso9660_filelist_free(CdioISO9660FileList_t *p_filelist) {
 */
 void
 iso9660_dirlist_free(CdioISO9660DirList_t *p_filelist) {
-  _cdio_list_free(p_filelist, true, free);
+  _cdio_list_free(p_filelist, true, (CdioDataFree_t) free);
 }
 
 

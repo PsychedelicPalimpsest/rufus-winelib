@@ -642,7 +642,10 @@ DWORD WaitForSingleObjectWithMessages(HANDLE hHandle, DWORD dwMilliseconds)
 
 #define STATUS_SUCCESS					((NTSTATUS)0x00000000L)
 #define STATUS_PROCEDURE_NOT_FOUND		((NTSTATUS)0xC000007AL)
+
+#ifndef FILE_ATTRIBUTE_VALID_FLAGS
 #define FILE_ATTRIBUTE_VALID_FLAGS		0x00007FB7
+#endif
 #define NtCurrentPeb()					(NtCurrentTeb()->ProcessEnvironmentBlock)
 #define RtlGetProcessHeap()				(NtCurrentPeb()->Reserved4[1]) // NtCurrentPeb()->ProcessHeap, mangled due to deficiencies in winternl.h
 
@@ -651,6 +654,9 @@ PF_TYPE_DECL(NTAPI, BOOLEAN, RtlDosPathNameToNtPathNameW, (PCWSTR, PUNICODE_STRI
 PF_TYPE_DECL(NTAPI, BOOLEAN, RtlFreeHeap, (PVOID, ULONG, PVOID));
 PF_TYPE_DECL(NTAPI, VOID, RtlSetLastWin32ErrorAndNtStatusFromNtStatus, (NTSTATUS));
 
+
+// TODO: Linux
+#ifndef _WINELIB
 HANDLE CreatePreallocatedFile(const char* lpFileName, DWORD dwDesiredAccess,
 	DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition,
 	DWORD dwFlagsAndAttributes, LONGLONG fileSize)
@@ -716,6 +722,10 @@ HANDLE CreatePreallocatedFile(const char* lpFileName, DWORD dwDesiredAccess,
 		flags |= FILE_DELETE_ON_CLOSE;
 		dwDesiredAccess |= DELETE;
 	}
+	#ifdef _WINELIB
+	#define FILE_OPEN_REMOTE_INSTANCE 0
+	#define FILE_OPEN_NO_RECALL FILE_FLAG_OPEN_NO_RECALL
+	#endif
 
 	if ((dwFlagsAndAttributes & FILE_FLAG_BACKUP_SEMANTICS) != 0) {
 		if ((dwDesiredAccess & GENERIC_ALL) != 0)
@@ -771,6 +781,8 @@ HANDLE CreatePreallocatedFile(const char* lpFileName, DWORD dwDesiredAccess,
 
 	return fileHandle;
 }
+#endif
+
 
 // The following calls are used to resolve the addresses of DLL function calls
 // that are not publicly exposed by Microsoft. This is accomplished by downloading
